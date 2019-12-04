@@ -1,0 +1,217 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace GATES
+{
+    public partial class Form1 : Form
+    {
+        //Kilde: Sebastian Harbro Fruensgaard, htxcd17
+        //Her laver vi instanser af de forskellige gatetyper
+        Gate OR1;
+        Gate OR2;
+        Gate OR3;
+        Gate OR4;
+        Gate OR5;
+        Gate OR6;
+        Gate OR7;
+        Gate OR8;
+        Gate ORul1;
+        Gate ORul2;
+        Gate ORl1;
+        Gate ORl2;
+        Gate Lige;
+        Gate ULige;
+
+        public Form1()
+        {
+            //Her indlæses formen
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            /*Her laver vi de forskellige gates 
+             * og definerer hvilken type gate de hhv. skal være
+             * samt hvilke inputs og outputs de forskellige gates er påvirket af
+             */
+            OR1 = new Gate("OR", inputBit1, inputBit3, null);
+            OR3 = new Gate("OR", inputBit5, inputBit7, null);
+            OR5 = new Gate("OR", inputBit9, inputBit11, null);
+            OR7 = new Gate("OR", inputBit13, inputBit15, null);
+            ORul1 = new Gate("OR", OR1, OR3, null);
+            ORul2 = new Gate("OR", OR5, OR7, null);
+
+            OR2 = new Gate("OR", inputBit2, inputBit4, null);
+            OR4 = new Gate("OR", inputBit6, inputBit8, null);
+            OR6 = new Gate("OR", inputBit10, inputBit12, null);
+            OR8 = new Gate("OR", inputBit14, inputBit16, null);
+            ORl1 = new Gate("OR", OR2, OR4, null);
+            ORl2 = new Gate("OR", OR6, OR8, null);
+
+            ULige = new Gate("OR", ORul1, ORul2, outputBit1);
+            Lige = new Gate("OR", ORl1, ORl2, outputBit2);
+        }
+        private void UpdateGates_Tick(object sender, EventArgs e)
+        {
+            //Kilde: Sebastian Harbro Fruensgaard, htxcd17
+            /* Her opdaterer vi vores forskellige gates,
+             * hvor vi tjekker om vores inputbits har ændret sig
+             */
+            OR1.UpdateGate();
+            OR2.UpdateGate();
+            OR3.UpdateGate();
+            OR4.UpdateGate();
+            OR5.UpdateGate();
+            OR6.UpdateGate();
+            OR7.UpdateGate();
+            OR8.UpdateGate();
+            ORul1.UpdateGate();
+            ORul2.UpdateGate();
+            ORl1.UpdateGate();
+            ORl2.UpdateGate();
+            ULige.UpdateGate();
+            Lige.UpdateGate();
+        }
+
+        private void OutputBit5_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void InputBit1_CheckedChanged(object sender, EventArgs e)
+        {
+        }
+    }
+    public class Gate
+    {
+        /*Her laver man en string der undersøger hvilken type gate, 
+        * der bliver brugt
+      */
+        private string gateType;
+
+        /*Her laver man et object til hvad det første input er. 
+         * Et object kan bruge flere typer.
+        */
+        private object referenceToFirstInput;
+
+        //Her laver man et object til hvad det andet input er
+        private object referenceToSecondInput;
+
+        /*Her laver man en bool 
+     * (der tjekker om noget er sandt eller falsk) 
+     * til at undersøge gate outputtet
+   */
+        public bool GateOutput;
+
+        /*Her laver vi en checkbox,
+         * der skal undersøge om outputtet er et bit
+        */
+        private CheckBox outputBit;
+
+        /*Her laver man en public (så maan kan bruge den flere steder) 
+         * gate instans fra class'en, hvor man inde i parenteserne
+         * definerer forskellige strings, objects og en radiobutton.
+         * Disse skal bestemme hvilke gates, inputs og output der er 
+         * (eller undersøge det). De variabler er midlertidige.
+         */
+        public Gate(string temp_gateType, object temp_first, object temp_sekund, CheckBox temp_outputBit)
+        {
+            /*Her gemmer man de midlertidige variabler i de normale variabler
+           */
+            gateType = temp_gateType;
+            referenceToFirstInput = temp_first;
+            referenceToSecondInput = temp_sekund;
+            outputBit = temp_outputBit;
+        }
+        public void UpdateGate()
+        {
+            //Her skriver man, at de inputs der er, sættes til falsk fra starten
+            bool input1 = false;
+            bool input2 = false;
+
+            /*Her tjekkes der om hvad det første inputs type er samt om det er
+            * en checkbox
+           */
+            if (referenceToFirstInput.GetType() == typeof(CheckBox))
+            {
+                /*Her bliver den første checkbox der er ændret til det første input
+                */
+                CheckBox first_converted = (CheckBox)referenceToFirstInput;
+                /*
+                 *Hvis den første checkbox der er ændret enten bliver markeret
+                 * eller ikke-markeret, bliver input1 hhv. også sand eller falsk
+                 **/
+                if (first_converted.Checked == true) input1 = true;
+                if (first_converted.Checked == false) input1 = false;
+            }
+            /*Her tjekkes der om hvad det første inputs type er samt om det er
+             * en gate
+            */
+            if (referenceToFirstInput.GetType() == typeof(Gate))
+            {
+                /*Her bliver den første gate der er ændret til det første input
+                */
+                Gate first_converted = (Gate)referenceToFirstInput;
+
+                /*Hvis den første gate der er ændret enten bliver sand eller falsk,
+                 bliver input1 hhv. også sand eller falsk*/
+                if (first_converted.GateOutput == true) input1 = true;
+                if (first_converted.GateOutput == false) input1 = false;
+            }
+            /*Her kører programmet koden under, 
+            hvis det andet input ikke er noget*/
+            if (referenceToSecondInput != null)
+            {
+                /*Her kører koden under, hvis typen af inputtet er en checkbox*/
+                if (referenceToSecondInput.GetType() == typeof(CheckBox))
+                {
+                    /*Her bliver den anden checkbox, der er markeret,
+                    til det andet input
+                    */
+                    CheckBox sekund_converted = (CheckBox)referenceToSecondInput;
+
+                    /*Hvis den anden checkbox der er ændret enten bliver markeret
+                    eller ikke-markeret, bliver input1 hhv. også sand eller falsk*/
+                    if (sekund_converted.Checked == true) input2 = true;
+                    if (sekund_converted.Checked == false) input2 = false;
+                }
+                /*Programmet kører koden i IF-statementet, hvis typen af det andet
+                 * input er en gate
+                 */
+                if (referenceToSecondInput.GetType() == typeof(Gate))
+                {
+                    /*Her bliver den anden gate,
+                   til det andet input
+                   */
+                    Gate sekund_converted = (Gate)referenceToSecondInput;
+
+                    /*Hvis den anden gate der er ændret enten er sand eller falsk, 
+                    * bliver input1 hhv. også sand eller falsk
+                    */
+                    if (sekund_converted.GateOutput == true) input2 = true;
+                    if (sekund_converted.GateOutput == false) input2 = false;
+                }
+            }
+            //Her bliver gateoutputtet til input 1 og input 2
+            if (gateType == "AND") GateOutput = input1 && input2;
+
+            //Her bliver gateoutputtet til input 1 eller input 2
+            if (gateType == "OR") GateOutput = input1 || input2;
+
+            // //Her bliver gateoutputtet ikke til input 1
+            if (gateType == "NOT") GateOutput = !input1;
+
+            /*Her bliver outpitbittet til gateoutputtet, 
+            * hvis gatetypen er noget (altså ikke, ikke noget)
+            */
+            if (outputBit != null) outputBit.Checked = GateOutput;
+        }
+    }
+}
